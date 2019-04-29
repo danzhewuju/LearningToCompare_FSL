@@ -144,8 +144,8 @@ def main():
     feature_encoder.apply(weights_init)
     relation_network.apply(weights_init)
 
-    feature_encoder.cuda(GPU)
-    relation_network.cuda(GPU)
+    feature_encoder.cuda(GPU)     # 利用gpu进行运算
+    relation_network.cuda(GPU)    # 利用gpu进行运算
 
     feature_encoder_optim = torch.optim.Adam(feature_encoder.parameters(), lr=LEARNING_RATE)
     feature_encoder_scheduler = StepLR(feature_encoder_optim, step_size=100000, gamma=0.5)
@@ -215,8 +215,8 @@ def main():
 
         loss.backward()
 
-        torch.nn.utils.clip_grad_norm(feature_encoder.parameters(), 0.5)
-        torch.nn.utils.clip_grad_norm(relation_network.parameters(), 0.5)
+        torch.nn.utils.clip_grad_norm_(feature_encoder.parameters(), 0.5)
+        torch.nn.utils.clip_grad_norm_(relation_network.parameters(), 0.5)
 
         feature_encoder_optim.step()
         relation_network_optim.step()
@@ -260,7 +260,7 @@ def main():
 
                     _, predict_labels = torch.max(relations.data, 1)
 
-                    test_labels = test_labels.cuda()
+                    test_labels = test_labels.cuda(GPU)
 
                     rewards = [1 if predict_labels[j] == test_labels[j] else 0 for j in range(batch_size)]
 

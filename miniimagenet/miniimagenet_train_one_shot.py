@@ -213,8 +213,8 @@ def main():
 
         loss.backward()
 
-        torch.nn.utils.clip_grad_norm(feature_encoder.parameters(), 0.5)
-        torch.nn.utils.clip_grad_norm(relation_network.parameters(), 0.5)
+        torch.nn.utils.clip_grad_norm_(feature_encoder.parameters(), 0.5)  # 梯度裁剪
+        torch.nn.utils.clip_grad_norm_(relation_network.parameters(), 0.5)
 
         feature_encoder_optim.step()
         relation_network_optim.step()
@@ -255,8 +255,8 @@ def main():
                     relations = relation_network(relation_pairs).view(-1, CLASS_NUM)
 
                     _, predict_labels = torch.max(relations.data, 1)
-                    predict_labels = predict_labels.cuda()
-                    test_labels = test_labels.cuda()
+                    # predict_labels = predict_labels.cuda()
+                    test_labels = test_labels.cuda(GPU)
 
                     rewards = [1 if predict_labels[j] == test_labels[j] else 0 for j in range(batch_size)]
 
