@@ -260,6 +260,8 @@ def main():
 
                     _, predict_labels = torch.max(relations.data, 1)
 
+                    test_labels = test_labels.cuda()
+
                     rewards = [1 if predict_labels[j] == test_labels[j] else 0 for j in range(batch_size)]
 
                     total_rewards += np.sum(rewards)
