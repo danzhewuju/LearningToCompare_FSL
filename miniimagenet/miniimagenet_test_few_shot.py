@@ -22,9 +22,9 @@ import scipy.stats
 parser = argparse.ArgumentParser(description="One Shot Visual Recognition")
 parser.add_argument("-f", "--feature_dim", type=int, default=64)
 parser.add_argument("-r", "--relation_dim", type=int, default=8)
-parser.add_argument("-w", "--class_num", type=int, default=5)
-parser.add_argument("-s", "--sample_num_per_class", type=int, default=5)
-parser.add_argument("-b", "--batch_num_per_class", type=int, default=10)
+parser.add_argument("-w", "--class_num", type=int, default=2)
+parser.add_argument("-s", "--sample_num_per_class", type=int, default=10)
+parser.add_argument("-b", "--batch_num_per_class", type=int, default=5)
 parser.add_argument("-e", "--episode", type=int, default=10)
 parser.add_argument("-t", "--test_episode", type=int, default=100)
 parser.add_argument("-l", "--learning_rate", type=float, default=0.001)
@@ -179,6 +179,7 @@ def main():
                                                                shuffle=False)
 
             sample_images, sample_labels = sample_dataloader.__iter__().next()
+            test_num = 0
             for test_images, test_labels in test_dataloader:
                 batch_size = test_labels.shape[0]
                 # calculate features
@@ -205,8 +206,9 @@ def main():
                 rewards = [1 if predict_labels[j] == test_labels[j] else 0 for j in range(batch_size)]
 
                 total_rewards += np.sum(rewards)
+                test_num += batch_size
 
-            accuracy = total_rewards / 1.0 / CLASS_NUM / 15
+            accuracy = total_rewards / 1.0 / test_num
             accuracies.append(accuracy)
 
         test_accuracy, h = mean_confidence_interval(accuracies)
